@@ -5,10 +5,9 @@ import time
 
 import Adafruit_DHT
 
-GPIO_PIN = 4
 INTERVAL = 60
-
 KEY = 'home.%(room)s.%(metric)s'
+SENSOR = Adafruit_DHT.DHT22
 
 
 def write_graphite(host, port, key, value):
@@ -22,7 +21,7 @@ def write_graphite(host, port, key, value):
 
 def main(gpio, room, graphite_host, graphite_port):
     while True:
-        hum, temp = Adafruit_DHT.read_retry(Adafruit_DHT.DHT22, gpio)
+        hum, temp = Adafruit_DHT.read_retry(SENSOR, gpio)
         if temp is not None:
             write_graphite(graphite_host, graphite_port, KEY % {'room': room, 'metric': 'temperature'}, temp)
         if hum is not None:
