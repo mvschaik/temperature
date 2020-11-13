@@ -1,0 +1,15 @@
+[Unit]
+Description=Temperature Monitor
+After=network.target
+
+[Install]
+WantedBy=default.target
+
+[Service]
+Environment="GPIO=4"
+Environment="HOST=0.0.0.0"
+Environment="ROOM=room"
+Environment="PORT=2003"
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 /usr/local/lib/temperature/read_temp.py "--gpio=${GPIO}" "--room=${ROOM}" "--host=${HOST}" "--port=${PORT}"
+Restart=on-failure
