@@ -1,5 +1,7 @@
 ## Temperature sensure for Raspberry Pi Zero W
 
+This is developed and tested on a Raspberry Pi Zero W, with a DHT22 temperature and humidity sensor.
+
 ### Prerequisites:
 
 ```sh
