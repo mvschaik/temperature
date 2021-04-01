@@ -12,8 +12,7 @@ sudo pip3 install Adafruit_DHT influxdb-client
 ### Installation
 
 ```sh
-sudo install -v -D -g root -o root -m 644 read_temp.py /usr/local/lib/temperature/
-sudo install -v -D -g root -o root -m 644 temperature.service /etc/systemd/system/
+sudo make install
 
 sudo systemctl daemon-reload
 sudo systemctl edit temperature
