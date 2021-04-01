@@ -17,7 +17,7 @@ sudo cp read_temp.py /usr/local/lib/temperature/
 sudo chown root:root /usr/local/lib/temperature/read_temp.py
 sudo chmod 644 /usr/local/lib/temperature/read_temp.py
 
-sudo cp temperature/service /etc/systemd/system
+sudo cp temperature.service /etc/systemd/system
 sudo chown root:root /etc/systemd/system/temperature.service
 sudo chmod 644 /etc/systemd/system/temperature.service
 
