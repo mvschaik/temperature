@@ -1,43 +1,40 @@
 import argparse
 import logging
 import socket
+from datetime import datetime
 import time
 
 import Adafruit_DHT
+from influxdb_client import InfluxDBClient, Point, WritePrecision
+from influxdb_client.client.write_api import SYNCHRONOUS
+
 
 INTERVAL = 60
-KEY = 'home.%(room)s.%(metric)s'
 SENSOR = Adafruit_DHT.DHT22
 
 
-def write_graphite(host, port, key, value):
-    logging.info("Sending %s => %s", key, value)
-    message = '%s %.3f %d\n' % (key, value, int(time.time()))
-    sock = socket.socket()
-    sock.connect((host, port))
-    sock.sendall(message.encode('ascii'))
-    sock.close()
-
-
-def main(gpio, room, graphite_host, graphite_port):
+def main(gpio, room, org, bucket):
     while True:
+        client = InfluxDBClient.from_env_properties()
+        write_api = client.write_api(write_options=SYNCHRONOUS)
         hum, temp = Adafruit_DHT.read_retry(SENSOR, gpio)
         if temp is not None:
-            write_graphite(graphite_host, graphite_port, KEY % {'room': room, 'metric': 'temperature'}, temp)
+            write_api.write(bucket, org, Point("temp").tag("room", room).field("degrees_c", temp).time(datetime.utcnow()))
         if hum is not None:
-            write_graphite(graphite_host, graphite_port, KEY % {'room': room, 'metric': 'humidity'}, hum)
-          
+            write_api.write(bucket, org, Point("humid").tag("room", room).field("perc_rh", hum).time(datetime.utcnow()))
+        write_api.close()
+
         time.sleep(INTERVAL)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Measure temperatures and send them to graphite')
     parser.add_argument('--gpio', type=int, help='GPIO port of temperature sensor', required=True)
-    parser.add_argument('--room', type=str, help='Room name to use in graphite', required=True)
-    parser.add_argument('--host', type=str, help='Graphite host to send metrics to', required=True)
-    parser.add_argument('--port', type=int, help='Graphite port number', default=2003)
+    parser.add_argument('--room', type=str, help='Room name to use in metric names', required=True)
+    parser.add_argument('--org', type=str, help='InfluxDB org to use')
+    parser.add_argument('--bucket', type=str, help='InfluxDB bucket to use')
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
     
-    main(args.gpio, args.room, args.host, args.port)
+    main(args.gpio, args.room, args.org, args.bucket)

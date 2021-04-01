@@ -6,7 +6,7 @@ This is developed and tested on a Raspberry Pi Zero W, with a DHT22 temperature 
 
 ```sh
 sudo apt install python3-systemd libgpiod2 python3-pip
-sudo pip3 install Adafruit_DHT
+sudo pip3 install Adafruit_DHT influxdb-client
 ```
 
 ### Installation
@@ -31,8 +31,11 @@ In the editor:
 [Service]
 Environment="ROOM=<room name>"
 Environment="GPIO=<gpio port number>"
-Environment="HOST=<graphite host name>"
-Environment="PORT=<graphite port number if not default>"
+Environment="INFLUXDB_V2_URL=https://url.to.influxdb.com"
+Environment="INFLUXDB_V2_ORG=<influxdb organization>"
+Environment="INFLUXDB_V2_BUCKET=<influxdb bucket>"
+Environment="INFLUXDB_V2_TOKEN=<infludb token>"
+
 ```
 
 Then:
