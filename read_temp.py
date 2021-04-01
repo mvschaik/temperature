@@ -19,9 +19,13 @@ def main(gpio, room, org, bucket):
         write_api = client.write_api(write_options=SYNCHRONOUS)
         hum, temp = Adafruit_DHT.read_retry(SENSOR, gpio)
         if temp is not None:
-            write_api.write(bucket, org, Point("temp").tag("room", room).field("degrees_c", temp).time(datetime.utcnow()))
+            p = Point("temp").tag("room", room).field("degrees_c", temp).time(datetime.utcnow())
+            logging.info("Writing %s", p.to_line_protocol())
+            write_api.write(bucket, org, p)
         if hum is not None:
-            write_api.write(bucket, org, Point("humid").tag("room", room).field("perc_rh", hum).time(datetime.utcnow()))
+            p = Point("humid").tag("room", room).field("perc_rh", hum).time(datetime.utcnow())
+            logging.info("Writing %s", p.to_line_protocol())
+            write_api.write(bucket, org, p)
         write_api.close()
 
         time.sleep(INTERVAL)
